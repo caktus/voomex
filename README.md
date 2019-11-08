@@ -1,5 +1,7 @@
 # Voomex
 
+* [![CircleCI](https://circleci.com/gh/caktus/voomex.svg?style=svg)](https://circleci.com/gh/caktus/voomex)
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
