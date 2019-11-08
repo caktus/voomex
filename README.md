@@ -1,5 +1,7 @@
 # Voomex
 
+* [![CircleCI](https://circleci.com/gh/caktus/voomex.svg?style=svg)](https://circleci.com/gh/caktus/voomex)
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
@@ -9,6 +11,10 @@ To start your Phoenix server:
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+
+## Development
+
+We use [pre-commit](https://pre-commit.com/) to format and test our code.
 
 ## Learn more
 
