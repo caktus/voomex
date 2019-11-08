@@ -12,7 +12,7 @@ jobs:
 
       - run: mix local.hex --force
       - run: mix local.rebar --force
-      - run: python -m pip install pre-commit
+      - run: curl https://pre-commit.com/install-local.py | python -
 
       - restore_cache:
           keys:
