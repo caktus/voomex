@@ -6,7 +6,7 @@ defmodule VoomexWeb.SMSController do
 
     # to_addr is a list of phone numbers
     case Enum.each(to_addr, fn dest_addr ->
-           Voomex.SMPP.send_to_mno(MySMPP, dest_addr, content)
+           Voomex.SMPP.send_to_mno(Voomex.SMPP, dest_addr, content)
          end) do
       :ok -> json(conn, :ok)
       _ -> json(conn, "error")
