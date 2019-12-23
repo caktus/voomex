@@ -9,9 +9,10 @@ defmodule Voomex.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      VoomexWeb.Endpoint
+      VoomexWeb.Endpoint,
       # Starts a worker by calling: Voomex.Worker.start_link(arg)
       # {Voomex.Worker, arg},
+      Voomex.SMPP
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
