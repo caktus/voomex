@@ -32,7 +32,7 @@ defmodule Voomex.Application do
 
     case config[:start] do
       true ->
-        Voomex.SMPP
+        Voomex.SMPP.Connection
 
       false ->
         nil
