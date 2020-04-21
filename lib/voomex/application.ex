@@ -8,11 +8,9 @@ defmodule Voomex.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      VoomexWeb.Endpoint,
-      smpp_listener()
+      Voomex.SMPP.Supervisor,
+      VoomexWeb.Endpoint
     ]
-
-    children = Enum.reject(children, &is_nil/1)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -25,17 +23,5 @@ defmodule Voomex.Application do
   def config_change(changed, _new, removed) do
     VoomexWeb.Endpoint.config_change(changed, removed)
     :ok
-  end
-
-  def smpp_listener() do
-    config = Application.get_env(:voomex, Voomex.SMPP)
-
-    case config[:start] do
-      true ->
-        Voomex.SMPP.Connection
-
-      false ->
-        nil
-    end
   end
 end
