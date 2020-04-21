@@ -1,4 +1,8 @@
 defmodule Voomex.RapidSMS do
+  @moduledoc """
+  Handles communication to RapidSMS
+  """
+
   require Logger
 
   @doc """
