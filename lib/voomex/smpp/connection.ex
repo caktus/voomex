@@ -23,7 +23,7 @@ defmodule Voomex.SMPP.Connection do
         {:ok, esme}
 
       {:error, err} ->
-        raise err
+        {:error, err}
     end
   end
 
