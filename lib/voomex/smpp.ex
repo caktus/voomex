@@ -3,14 +3,14 @@ defmodule Voomex.SMPP do
   Voomex.SMPP handles the interaction between the web API and the mobile network operator (MNO).
   """
 
-  alias Voomex.SMPP.Connection
-  alias Voomex.SMPP.PDU
+  @callback send_to_mno(dest_addresses :: [String.t()], message :: String.t()) :: :ok
+
+  @callback_module Application.get_env(:voomex, Voomex.SMPP)[:callback_module]
 
   @doc """
   Send a message to the destination address
   """
-  def send_to_mno(dest_addr, message) do
-    submit_sm = PDU.submit_sm(dest_addr, message)
-    SMPPEX.Session.send_pdu(Connection, submit_sm)
+  def send_to_mno(dest_addresses, message) do
+    @callback_module.send_to_mno(dest_addresses, message)
   end
 end

@@ -1,15 +1,18 @@
 defmodule VoomexWeb.SMSController do
   use VoomexWeb, :controller
 
-  def send(conn, %{"data" => %{"to_addr" => to_addr, "content" => content}}) do
-    # send a message to MNO
+  alias Voomex.SMPP
 
-    # to_addr is a list of phone numbers
-    case Enum.each(to_addr, fn dest_addr ->
-           Voomex.SMPP.send_to_mno(dest_addr, content)
-         end) do
-      :ok -> json(conn, :ok)
-      _ -> json(conn, "error")
-    end
+  def send(conn, %{"data" => %{"to_addr" => to_addr, "content" => content}})
+      when is_list(to_addr) do
+    SMPP.send_to_mno(to_addr, content)
+
+    json(conn, :ok)
+  end
+
+  def send(conn, _params) do
+    conn
+    |> put_status(422)
+    |> json("error")
   end
 end

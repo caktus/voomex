@@ -24,6 +24,7 @@ config :phoenix, :json_library, Jason
 
 config :voomex, Voomex.SMPP,
   start: true,
+  callback_module: Voomex.SMPP.Implementation,
   host: "localhost",
   port: 2775,
   system_id: "smppclient1",
