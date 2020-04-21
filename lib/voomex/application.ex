@@ -8,8 +8,10 @@ defmodule Voomex.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      Voomex.Repo,
       Voomex.SMPP.Supervisor,
-      VoomexWeb.Endpoint
+      VoomexWeb.Endpoint,
+      {Oban, oban_config()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -23,5 +25,18 @@ defmodule Voomex.Application do
   def config_change(changed, _new, removed) do
     VoomexWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp oban_config() do
+    opts = Application.get_env(:voomex, Oban)
+
+    # Prevent running queues or scheduling jobs from an iex console.
+    if Code.ensure_loaded?(IEx) and IEx.started?() do
+      opts
+      |> Keyword.put(:crontab, false)
+      |> Keyword.put(:queues, false)
+    else
+      opts
+    end
   end
 end

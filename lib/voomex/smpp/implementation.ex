@@ -5,14 +5,10 @@ defmodule Voomex.SMPP.Implementation do
 
   @behaviour Voomex.SMPP
 
-  alias Voomex.SMPP.Connection
-  alias Voomex.SMPP.PDU
-
   @impl true
   def send_to_mno(dest_addresses, message) do
-    Enum.map(dest_addresses, fn dest_addr ->
-      submit_sm = PDU.submit_sm(dest_addr, message)
-      SMPPEX.Session.send_pdu(Connection, submit_sm)
-    end)
+    %{dest_addresses: dest_addresses, message: message}
+    |> Voomex.SMPP.Worker.new()
+    |> Oban.insert()
   end
 end

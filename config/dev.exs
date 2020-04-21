@@ -1,5 +1,9 @@
 use Mix.Config
 
+config :voomex, Voomex.Repo,
+  database: "voomex_dev",
+  hostname: "localhost"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
