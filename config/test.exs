@@ -6,7 +6,9 @@ config :voomex, VoomexWeb.Endpoint,
   http: [port: 4002],
   server: false
 
-config :voomex, Voomex.SMPP, start: false
+config :voomex, Voomex.SMPP,
+  start: false,
+  callback_module: Voomex.SMPP.Mock
 
 # Print only warnings and errors during test
 config :logger, level: :warn
