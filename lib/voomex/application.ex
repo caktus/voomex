@@ -12,8 +12,6 @@ defmodule Voomex.Application do
       VoomexWeb.Endpoint
     ]
 
-    children = Enum.reject(children, &is_nil/1)
-
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Voomex.Supervisor]

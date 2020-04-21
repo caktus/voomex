@@ -24,7 +24,7 @@ defmodule Voomex.SMPP.TetherSupervisor do
         DynamicSupervisor.start_child(__MODULE__, {Connection, []})
 
       false ->
-        :ok
+        {:error, :not_starting}
     end
   end
 
