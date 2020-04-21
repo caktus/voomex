@@ -7,6 +7,8 @@ defmodule Voomex.SMPP.Connection do
 
   require Logger
 
+  alias Voomex.RapidSMS
+
   # External API
 
   def start_link(_state) do
@@ -76,16 +78,12 @@ defmodule Voomex.SMPP.Connection do
   def handle_pdu(pdu, state) do
     case SMPPEX.Pdu.command_name(pdu) do
       :deliver_sm ->
-        send_to_rapidsms(pdu)
+        RapidSMS.send_message(pdu)
 
       _ ->
         Logger.info("Got unhandled PDU: #{inspect(pdu)}")
     end
 
     {:ok, state}
-  end
-
-  defp send_to_rapidsms(pdu) do
-    Logger.info("FIXME: HTTP POST to RapidSMS: #{inspect(pdu)}")
   end
 end
