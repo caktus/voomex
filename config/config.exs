@@ -23,6 +23,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :voomex, Voomex.SMPP,
+  start: true,
   host: "localhost",
   port: 2775,
   system_id: "10030",

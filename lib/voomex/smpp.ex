@@ -2,7 +2,9 @@ defmodule Voomex.SMPP do
   @moduledoc """
   Voomex.SMPP handles the interaction between the web API and the mobile network operator (MNO).
   """
+
   use SMPPEX.Session
+
   require Logger
 
   # External API
@@ -21,9 +23,7 @@ defmodule Voomex.SMPP do
         {:ok, esme}
 
       {:error, err} ->
-        IO.puts(err)
-        # Get test to pass
-        {:ok, self()}
+        raise err
     end
   end
 
@@ -60,7 +60,8 @@ defmodule Voomex.SMPP do
   @impl true
   def init(_socket, _transport, _args) do
     # send ourselves a message to bind to the MNO
-    Kernel.send(self(), :bind)
+    # TODO switch to handle_continue
+    send(self(), :bind)
     {:ok, %{}}
   end
 
