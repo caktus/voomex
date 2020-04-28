@@ -8,7 +8,7 @@ defmodule VoomexWeb.SMSControllerTest do
         "content" => "Hello, world"
       }
 
-      conn = post(conn, Routes.sms_path(conn, :send), data: data)
+      conn = post(conn, Routes.sms_path(conn, :send), data)
 
       assert json_response(conn, 200) == "ok"
 
@@ -21,13 +21,13 @@ defmodule VoomexWeb.SMSControllerTest do
         "content" => "Hello, world"
       }
 
-      conn = post(conn, Routes.sms_path(conn, :send), data: data)
+      conn = post(conn, Routes.sms_path(conn, :send), data)
 
       assert json_response(conn, 422) == "error"
     end
 
     test "failure when missing parameters", %{conn: conn} do
-      conn = post(conn, Routes.sms_path(conn, :send), data: %{})
+      conn = post(conn, Routes.sms_path(conn, :send), %{})
 
       assert json_response(conn, 422) == "error"
     end
