@@ -16,6 +16,12 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 We use [pre-commit](https://pre-commit.com/) to format and test our code.
 
+To run a fake SMPP server (MC), we're currently using this docker image:
+
+```
+docker run -p 2775:2775 -p 88:88 --name smppsim kk1983/smpp
+```
+
 ## Learn more
 
   * Official website: http://www.phoenixframework.org/
