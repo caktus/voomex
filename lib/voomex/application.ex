@@ -8,6 +8,7 @@ defmodule Voomex.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      Voomex.Telemetry,
       Voomex.Repo,
       Voomex.SMPP.Supervisor,
       VoomexWeb.Endpoint,
