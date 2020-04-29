@@ -43,3 +43,5 @@ npm-debug.log
 
 # Editor-specific files to ignore
 /.elixir_ls/
+
+/tmp/
