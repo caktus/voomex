@@ -8,7 +8,8 @@ config :voomex, VoomexWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "fqPLXIWkfgs+SzeZVyKHi8aXPart/ZT5uDo+SNvmGiS5FZ3AeO9qQh2i9RQiWBej",
   render_errors: [view: VoomexWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Voomex.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Voomex.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [signing_salt: "SECRET_SALT"]
 
 config :voomex, Voomex.SMPP,
   start: true,

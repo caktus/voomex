@@ -13,10 +13,18 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+live_view_salt =
+  System.get_env("LIVE_VIEW_SALT") ||
+    raise """
+    environment variable SECRET_KEY_BASE is missing.
+    You can generate one by calling: mix phx.gen.secret
+    """
+
 config :voomex, VoomexWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT"))],
   url: [host: System.get_env("HOST"), port: 80],
   secret_key_base: secret_key_base,
+  live_view: [signing_salt: live_view_salt],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :voomex, Voomex.Repo, url: System.get_env("DATABASE_URL")
