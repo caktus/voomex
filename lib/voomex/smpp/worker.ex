@@ -12,7 +12,7 @@ defmodule Voomex.SMPP.Worker do
   # each job can fail independently and not retry and resend messages
   # above the failure
   def perform(%{"dest_addresses" => dest_addresses, "message" => message}, _job) do
-    Enum.map(dest_addresses, fn dest_addr ->
+    Enum.each(dest_addresses, fn dest_addr ->
       submit_sm = PDU.submit_sm(dest_addr, message)
 
       # TODO validate what comes back from this, raise an error if there is one
