@@ -6,13 +6,24 @@ defmodule Voomex.SMPP.Implementation do
   @behaviour Voomex.SMPP
 
   alias Voomex.SMPP.Connection
-  alias Voomex.SMPP.PDU
+
+  @impl true
+  def send_submit_sm(submit_sm) do
+    case Voomex.SMPP.Monitor.booted?() do
+      true ->
+        SMPPEX.Session.send_pdu(Connection, submit_sm)
+
+      false ->
+        {:error, :not_booted}
+    end
+  end
 
   @impl true
   def send_to_mno(dest_addresses, message) do
-    Enum.map(dest_addresses, fn dest_addr ->
-      submit_sm = PDU.submit_sm(dest_addr, message)
-      SMPPEX.Session.send_pdu(Connection, submit_sm)
+    Enum.each(dest_addresses, fn dest_addr ->
+      %{dest_addr: dest_addr, message: message}
+      |> Voomex.SMPP.Worker.new()
+      |> Oban.insert()
     end)
   end
 end

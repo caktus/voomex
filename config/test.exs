@@ -10,5 +10,14 @@ config :voomex, Voomex.SMPP,
   start: false,
   callback_module: Voomex.SMPP.Mock
 
+config :voomex, Voomex.Repo,
+  database: "voomex_test",
+  hostname: "localhost"
+
+config :voomex, Oban,
+  crontab: false,
+  queues: false,
+  prune: :disabled
+
 # Print only warnings and errors during test
 config :logger, level: :warn
