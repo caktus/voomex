@@ -11,6 +11,7 @@ config :voomex, Voomex.SMPP,
   callback_module: Voomex.SMPP.Mock
 
 config :voomex, Voomex.Repo,
+  url: System.get_env("DATABASE_URL"),
   database: "voomex_test",
   hostname: "localhost"
 
@@ -21,3 +22,7 @@ config :voomex, Oban,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+if File.exists?("config/#{Mix.env()}.secret.exs") do
+  import_config("#{Mix.env()}.secret.exs")
+end
