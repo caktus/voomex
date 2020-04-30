@@ -11,6 +11,7 @@ config :voomex, Voomex.SMPP,
   callback_module: Voomex.SMPP.Mock
 
 config :voomex, Voomex.Repo,
+  url: System.get_env("DATABASE_URL"),
   database: "voomex_test",
   hostname: "localhost"
 
