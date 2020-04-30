@@ -1,5 +1,6 @@
 defmodule VoomexWeb.Router do
   use VoomexWeb, :router
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -24,5 +25,12 @@ defmodule VoomexWeb.Router do
     pipe_through :api
 
     post "/send", SMSController, :send
+  end
+
+  if Mix.env() == :dev do
+    scope "/" do
+      pipe_through :browser
+      live_dashboard "/dashboard", metrics: Voomex.Telemetry
+    end
   end
 end

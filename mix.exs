@@ -19,7 +19,7 @@ defmodule Voomex.MixProject do
   def application do
     [
       mod: {Voomex.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end
 
@@ -39,11 +39,14 @@ defmodule Voomex.MixProject do
       {:oban, "~> 1.2"},
       {:phoenix, "~> 1.4.10"},
       {:phoenix_html, "~> 2.11"},
+      {:phoenix_live_dashboard, "~> 0.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:postgrex, ">= 0.0.0"},
-      {:smppex, "~> 2.0"}
+      {:smppex, "~> 2.0"},
+      {:telemetry_poller, "~> 0.4"},
+      {:telemetry_metrics, "~> 0.4"}
     ]
   end
 end

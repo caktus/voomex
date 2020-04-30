@@ -12,6 +12,7 @@ WORKDIR /app
 COPY assets/package.json assets/yarn.lock /app/
 COPY --from=builder /app/deps/phoenix /deps/phoenix
 COPY --from=builder /app/deps/phoenix_html /deps/phoenix_html
+COPY --from=builder /app/deps/phoenix_live_view /deps/phoenix_live_view
 RUN yarn install
 COPY assets /app
 RUN yarn run deploy
