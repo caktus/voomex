@@ -16,7 +16,7 @@ secret_key_base =
 live_view_salt =
   System.get_env("LIVE_VIEW_SALT") ||
     raise """
-    environment variable SECRET_KEY_BASE is missing.
+    environment variable LIVE_VIEW_SALT is missing.
     You can generate one by calling: mix phx.gen.secret
     """
 

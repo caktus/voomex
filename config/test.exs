@@ -21,3 +21,7 @@ config :voomex, Oban,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+if File.exists?("config/#{Mix.env()}.secret.exs") do
+  import_config("#{Mix.env()}.secret.exs")
+end
