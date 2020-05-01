@@ -34,6 +34,7 @@ config :voomex, Voomex.SMPP,
   callback_module: Voomex.SMPP.Implementation,
   host: System.get_env("SMPP_HOST"),
   port: String.to_integer(System.get_env("SMPP_PORT")),
+  transport_name: System.get_env("SMPP_TRANSPORT_NAME"),
   system_id: System.get_env("SMPP_SYSTEM_ID"),
   password: System.get_env("SMPP_PASSWORD"),
   source_addr: System.get_env("SMPP_SOURCE_ADDR"),
@@ -42,10 +43,12 @@ config :voomex, Voomex.SMPP,
   dest_ton: 1,
   dest_npi: 1
 
+config :voomex, Voomex.RapidSMS, url: System.get_env("RAPIDSMS_URL")
+
 config :voomex, Oban,
   repo: Voomex.Repo,
   prune: {:maxlen, 10_000},
-  queues: [smpp: 10, rapid_sms: 10]
+  queues: [to_smpp: 10, to_rapidsms: 10]
 
 config :logger, :console,
   level: :info,

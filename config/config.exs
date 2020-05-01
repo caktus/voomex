@@ -16,6 +16,7 @@ config :voomex, Voomex.SMPP,
   callback_module: Voomex.SMPP.Implementation,
   host: "localhost",
   port: 2775,
+  transport_name: "almadar_smpp_transport_10020",
   system_id: "smppclient1",
   password: "password",
   source_addr: "12345",
@@ -24,10 +25,12 @@ config :voomex, Voomex.SMPP,
   dest_ton: 1,
   dest_npi: 1
 
+config :voomex, Voomex.RapidSMS, url: "http://localhost:8002/backend/vumi-http/"
+
 config :voomex, Oban,
   repo: Voomex.Repo,
   prune: {:maxlen, 10_000},
-  queues: [smpp: 10, rapid_sms: 10]
+  queues: [to_smpp: 10, to_rapidsms: 10]
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
