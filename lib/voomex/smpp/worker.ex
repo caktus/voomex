@@ -1,9 +1,9 @@
 defmodule Voomex.SMPP.Worker do
   @moduledoc """
-  Oban worker for SMPP
+  Oban worker for messages going to SMPP connection
   """
 
-  use Oban.Worker, queue: :smpp
+  use Oban.Worker, queue: :to_smpp
 
   alias Voomex.SMPP
   alias Voomex.SMPP.PDU
