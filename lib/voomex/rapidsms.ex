@@ -15,6 +15,9 @@ defmodule Voomex.RapidSMS do
     |> Oban.insert()
   end
 
+  @doc """
+  Convert a PDU to a request which matches the JSON expected by RapidSMS
+  """
   def pdu_to_request(pdu) do
     config = Application.get_env(:voomex, Voomex.SMPP)
 
@@ -32,6 +35,9 @@ defmodule Voomex.RapidSMS do
     }
   end
 
+  @doc """
+  Send a HTTP post to the configured RapidSMS endpoint
+  """
   def post_request(request) do
     config = Application.get_env(:voomex, Voomex.RapidSMS)
     Mojito.post(config[:url], [{"content-type", "application/json"}], request)

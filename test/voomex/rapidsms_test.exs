@@ -3,8 +3,8 @@ defmodule Voomex.RapidSMS.Test do
 
   alias Voomex.RapidSMS
 
-  describe "prepare request" do
-    test "sets from_addr" do
+  describe "pdu_to_request" do
+    test "sets expected values" do
       pdu = %{
         mandatory: %{
           source_addr: "12345",
@@ -16,6 +16,8 @@ defmodule Voomex.RapidSMS.Test do
       request = RapidSMS.pdu_to_request(pdu)
 
       assert request.from_addr == "12345"
+      assert request.to_addr == "54321"
+      assert request.content == "Test message"
     end
   end
 end
