@@ -54,7 +54,15 @@ defmodule Voomex.SMPP.Connection do
     config = Application.get_env(:voomex, Voomex.SMPP)
     system_id = config[:system_id]
     password = config[:password]
-    {:noreply, [SMPPEX.Pdu.Factory.bind_transceiver(system_id, password)], state}
+
+    opts = %{
+      # Using SMPP version 3.4
+      interface_version: 0x34
+    }
+
+    pdu = SMPPEX.Pdu.Factory.bind_transceiver(system_id, password, opts)
+    Logger.info("Outgoing bind_transceiver pdu: #{inspect(pdu)}")
+    {:noreply, [pdu], state}
   end
 
   @impl true
@@ -65,7 +73,7 @@ defmodule Voomex.SMPP.Connection do
         {:ok, state}
 
       :bind_transceiver_resp ->
-        Logger.info("MNO Bind transceiver response received: #{inspect(pdu)}")
+        Logger.info("Incoming bind_transceiver_response: #{inspect(pdu)}")
         {:ok, state}
 
       _ ->
