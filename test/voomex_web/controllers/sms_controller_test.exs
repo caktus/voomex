@@ -5,29 +5,31 @@ defmodule VoomexWeb.SMSControllerTest do
     test "successful", %{conn: conn} do
       data = %{
         "to_addr" => ["12345", "23456"],
-        "content" => "Hello, world"
+        "content" => "Hello, world",
+        "from_addr" => "10020"
       }
 
-      conn = post(conn, Routes.sms_path(conn, :send), data)
+      conn = post(conn, Routes.sms_path(conn, :send, "my_mno"), data)
 
       assert json_response(conn, 200) == "ok"
 
-      assert_received {:send_to_mno, ["12345", "23456"], "Hello, world"}
+      assert_received {:send_to_mno, "my_mno", "10020", ["12345", "23456"], "Hello, world"}
     end
 
     test "failure when to_addr is not a list", %{conn: conn} do
       data = %{
         "to_addr" => "12345",
-        "content" => "Hello, world"
+        "content" => "Hello, world",
+        "from_addr" => "10020"
       }
 
-      conn = post(conn, Routes.sms_path(conn, :send), data)
+      conn = post(conn, Routes.sms_path(conn, :send, "my_mno"), data)
 
       assert json_response(conn, 422) == "error"
     end
 
     test "failure when missing parameters", %{conn: conn} do
-      conn = post(conn, Routes.sms_path(conn, :send), %{})
+      conn = post(conn, Routes.sms_path(conn, :send, "my_mno"), %{})
 
       assert json_response(conn, 422) == "error"
     end

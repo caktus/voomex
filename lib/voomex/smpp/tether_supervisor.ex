@@ -16,12 +16,17 @@ defmodule Voomex.SMPP.TetherSupervisor do
   alias Voomex.SMPP.Connection
 
   @doc false
-  def start_connection() do
+  def name(connection) do
+    {:via, Registry, {Voomex.SMPP.TetherRegistry, {connection.mno, connection.source_addr}}}
+  end
+
+  @doc false
+  def start_connection(connection) do
     config = Application.get_env(:voomex, Voomex.SMPP)
 
     case config[:start] do
       true ->
-        DynamicSupervisor.start_child(__MODULE__, {Connection, []})
+        DynamicSupervisor.start_child(name(connection), {Connection, connection})
 
       false ->
         {:error, :not_starting}

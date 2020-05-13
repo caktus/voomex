@@ -24,7 +24,7 @@ defmodule VoomexWeb.Router do
   scope "/api/v1", VoomexWeb do
     pipe_through :api
 
-    post "/send", SMSController, :send
+    post "/send/:mno", SMSController, :send
   end
 
   if Mix.env() == :dev do

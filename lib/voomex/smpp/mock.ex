@@ -6,12 +6,12 @@ defmodule Voomex.SMPP.Mock do
   @behaviour Voomex.SMPP
 
   @impl true
-  def send_submit_sm(submit_sm) do
-    send(self(), {:send_submit_sm, submit_sm})
+  def send_submit_sm(mno, from_addr, submit_sm) do
+    send(self(), {:send_submit_sm, mno, from_addr, submit_sm})
   end
 
   @impl true
-  def send_to_mno(dest_addr, message) do
-    send(self(), {:send_to_mno, dest_addr, message})
+  def send_to_mno(mno, from_addr, dest_addr, message) do
+    send(self(), {:send_to_mno, mno, from_addr, dest_addr, message})
   end
 end
