@@ -18,15 +18,14 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 We use [pre-commit](https://pre-commit.com/) to format and test our code.
 
-To run a fake SMPP server (MC), we're currently using this docker image:
+To run a fake SMPP server (MC), we're currently using [this docker
+image](https://hub.docker.com/r/kk1983/smpp/). The docker-compose file in this repo will
+start up 2 fake servers. Fake Almadar is listening for SMPP connections on port 2775 and
+HTTP connections on port 88. Fake Libyana is listening for SMPP connections on port 2776 and
+HTTP connections on port 89.
 
 ```
-docker run -p 2775:2775 -p 88:88 --name smppsim kk1983/smpp
-```
-To stop and restart it, use these commands:
-
-```
-docker stop smppsim && docker start -a smppsim
+docker-compose up
 ```
 
 The steps above should get you running. You can also make local configurations which won't go into
@@ -40,7 +39,8 @@ config :voomex, Voomex.Repo,
   socket_dir: "/var/run/postgresql",
 ```
 
-To run the Phoenix server, while also having a command line to inspect stuff:
+To run the Phoenix server, while also having a command line to inspect stuff (but note
+that the Oban jobs will not run in that scenario):
 
 ```
 iex -S mix phx.server

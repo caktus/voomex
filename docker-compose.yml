@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  almadar:
+    restart: unless-stopped
+    image: kk1983/smpp
+    ports:
+      - '2775:2775'
+      - '88:88'
+
+  libyana:
+    restart: unless-stopped
+    image: kk1983/smpp
+    ports:
+      - '2776:2775'
+      - '89:88'
