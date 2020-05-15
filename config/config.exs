@@ -14,16 +14,30 @@ config :voomex, VoomexWeb.Endpoint,
 config :voomex, Voomex.SMPP,
   start: true,
   callback_module: Voomex.SMPP.Implementation,
-  host: "localhost",
-  port: 2775,
-  transport_name: "almadar_smpp_transport_10020",
-  system_id: "smppclient1",
-  password: "password",
-  source_addr: "12345",
   source_ton: 1,
   source_npi: 1,
   dest_ton: 1,
-  dest_npi: 1
+  dest_npi: 1,
+  connections: [
+    %{
+      mno: "almadar",
+      source_addr: "10020",
+      host: "localhost",
+      port: 2775,
+      transport_name: "almadar_smpp_transport_10020",
+      system_id: "smppclient1",
+      password: "password"
+    },
+    %{
+      mno: "libyana",
+      source_addr: "10020",
+      host: "localhost",
+      port: 2776,
+      transport_name: "libyana_smpp_transport_10020",
+      system_id: "smppclient1",
+      password: "password"
+    }
+  ]
 
 config :voomex, Voomex.RapidSMS, url: "http://localhost:8002/backend/vumi-http/"
 

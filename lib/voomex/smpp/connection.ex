@@ -11,22 +11,17 @@ defmodule Voomex.SMPP.Connection do
 
   # External API
 
-  def start_link(_state) do
-    # Get the MNO host and port
-    config = Application.get_env(:voomex, Voomex.SMPP)
-    host = config[:host]
-    port = config[:port]
+  def name(connection) do
+    name(connection.mno, connection.source_addr)
+  end
 
+  def name(mno, source_addr) do
+    {:via, Registry, {Voomex.SMPP.ConnectionRegistry, {mno, source_addr}}}
+  end
+
+  def start_link(connection) do
     # Start the MNO connection (but don't bind yet)
-    case SMPPEX.ESME.start_link(host, port, {__MODULE__, []}) do
-      {:ok, esme} ->
-        # Name the process
-        Process.register(esme, __MODULE__)
-        {:ok, esme}
-
-      {:error, err} ->
-        {:error, err}
-    end
+    SMPPEX.ESME.start_link(connection.host, connection.port, {__MODULE__, connection})
   end
 
   # GenServer implementation
@@ -42,26 +37,25 @@ defmodule Voomex.SMPP.Connection do
   end
 
   @impl true
-  def init(_socket, _transport, _args) do
+  def init(_socket, _transport, config) do
+    Registry.register(Voomex.SMPP.ConnectionRegistry, {config.mno, config.source_addr}, self())
+
     # send ourselves a message to bind to the MNO
-    # TODO switch to handle_continue
     send(self(), :bind)
-    {:ok, %{}}
+
+    {:ok, %{config: config}}
   end
 
   @impl true
-  def handle_info(:bind, state) do
-    config = Application.get_env(:voomex, Voomex.SMPP)
-    system_id = config[:system_id]
-    password = config[:password]
-
+  def handle_info(:bind, state = %{config: config}) do
     opts = %{
       # Using SMPP version 3.4
       interface_version: 0x34
     }
 
-    pdu = SMPPEX.Pdu.Factory.bind_transceiver(system_id, password, opts)
+    pdu = SMPPEX.Pdu.Factory.bind_transceiver(config.system_id, config.password, opts)
     Logger.info("Outgoing bind_transceiver pdu: #{inspect(pdu)}")
+
     {:noreply, [pdu], state}
   end
 

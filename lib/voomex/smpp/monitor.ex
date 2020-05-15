@@ -1,3 +1,8 @@
+defmodule Voomex.SMPP.Monitor.Connection do
+  @moduledoc false
+  defstruct [:mno, :source_addr, :host, :port, :transport_name, :system_id, :password, :pid]
+end
+
 defmodule Voomex.SMPP.Monitor do
   @moduledoc """
   Monitor the SMPP connection process
@@ -15,11 +20,11 @@ defmodule Voomex.SMPP.Monitor do
   @connection_boot_delay 1_500
   @connection_retry_delay 10_000
 
-  defstruct [:connection_pid]
+  defstruct [:connections]
 
   @doc false
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, [], opts)
+    GenServer.start_link(__MODULE__, opts)
   end
 
   @doc """
@@ -29,9 +34,9 @@ defmodule Voomex.SMPP.Monitor do
   is _meant_ not to be up. This is different than if the connection dropped
   sometime after boot and we can handle the states differently.
   """
-  def booted?() do
-    case :ets.lookup(__MODULE__, :booted) do
-      [booted: true] ->
+  def booted?(mno, source_addr) do
+    case :ets.lookup(__MODULE__, {mno, source_addr}) do
+      [{_, booted: true}] ->
         true
 
       _ ->
@@ -40,46 +45,74 @@ defmodule Voomex.SMPP.Monitor do
   end
 
   @impl true
-  def init(_) do
+  def init(opts) do
     Logger.debug("Starting the monitor", tag: :smpp)
 
     Process.flag(:trap_exit, true)
-    Process.send_after(self(), [:connect, :initial], @connection_boot_delay)
 
     :ets.new(__MODULE__, [:set, :protected, :named_table])
 
-    {:ok, %__MODULE__{}}
+    connections =
+      Enum.map(opts[:connections], fn connection ->
+        struct(Voomex.SMPP.Monitor.Connection, connection)
+      end)
+
+    Enum.each(connections, fn connection ->
+      Process.send_after(self(), [:connect, :initial, connection], @connection_boot_delay)
+    end)
+
+    {:ok, %__MODULE__{connections: connections}}
   end
 
   @impl true
-  def handle_info([:connect, reason], state) do
-    connecting(reason)
+  def handle_info([:connect, reason, connection], state) do
+    connecting(reason, connection)
 
-    case TetherSupervisor.start_connection() do
+    case TetherSupervisor.start_connection(connection) do
       {:ok, pid} ->
         Process.link(pid)
         Logger.debug("Connected to MNO", tag: :smpp)
-        {:noreply, Map.put(state, :connection_pid, pid)}
+
+        {:noreply, update_connection_pid(state, connection, pid)}
 
       {:error, error} ->
         Logger.debug("Connection could not connect - #{inspect(error)}", tag: :smpp)
-        restart_connection()
+        restart_connection(connection)
         {:noreply, state}
     end
   end
 
-  def handle_info({:EXIT, pid, _reason}, state = %{connection_pid: pid}) do
-    restart_connection()
-    {:noreply, Map.put(state, :connection_pid, nil)}
+  def handle_info({:EXIT, pid, _reason}, state) do
+    connection =
+      Enum.find(state.connections, fn connection ->
+        connection.pid == pid
+      end)
+
+    restart_connection(connection)
+
+    {:noreply, update_connection_pid(state, connection, nil)}
   end
 
-  defp connecting(:initial) do
-    :ets.insert(__MODULE__, {:booted, true})
+  defp connecting(:initial, connection) do
+    id = {connection.mno, connection.source_addr}
+    :ets.insert(__MODULE__, {id, [booted: true]})
   end
 
-  defp connecting(_reason), do: :ok
+  defp connecting(_reason, _connection), do: :ok
 
-  defp restart_connection() do
-    Process.send_after(self(), [:connect, :restart], @connection_retry_delay)
+  defp restart_connection(connection) do
+    Process.send_after(self(), [:connect, :restart, connection], @connection_retry_delay)
+  end
+
+  defp update_connection_pid(state, connection, pid) do
+    connections =
+      Enum.reject(state.connections, fn existing_connection ->
+        existing_connection.mno == connection.mno &&
+          existing_connection.source_addr == connection.source_addr
+      end)
+
+    connection = %{connection | pid: pid}
+    connections = [connection | connections]
+    %{state | connections: connections}
   end
 end
