@@ -24,7 +24,6 @@ config :voomex, Voomex.SMPP,
       source_addr: "10020",
       host: "localhost",
       port: 2775,
-      transport_name: "almadar_smpp_transport_10020",
       system_id: "smppclient1",
       password: "password"
     },
@@ -33,13 +32,22 @@ config :voomex, Voomex.SMPP,
       source_addr: "10020",
       host: "localhost",
       port: 2776,
-      transport_name: "libyana_smpp_transport_10020",
       system_id: "smppclient1",
       password: "password"
     }
   ]
 
-config :voomex, Voomex.RapidSMS, url: "http://localhost:8002/backend/vumi-http/"
+config :voomex, Voomex.RapidSMS,
+  connections: [
+    %{
+      mno: "almadar",
+      url: "http://localhost:8002/backend/vumi-almadar/"
+    },
+    %{
+      mno: "libyana",
+      url: "http://localhost:8002/backend/vumi-libyana/"
+    }
+  ]
 
 config :voomex, Oban,
   repo: Voomex.Repo,
