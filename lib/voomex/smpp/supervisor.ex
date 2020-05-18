@@ -18,8 +18,10 @@ defmodule Voomex.SMPP.Supervisor do
 
     children =
       Enum.map(connections, fn connection ->
+        transport_name = "#{connection.mno}_smpp_transport_#{connection.source_addr}"
+
         Supervisor.child_spec({TetherSupervisor, [name: TetherSupervisor.name(connection)]},
-          id: "#{connection.mno}_smpp_transport_#{connection.source_addr}"
+          id: transport_name
         )
       end)
 
