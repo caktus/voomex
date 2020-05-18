@@ -80,7 +80,7 @@ defmodule Voomex.SMPP.Connection do
   def handle_pdu(pdu, state) do
     case SMPPEX.Pdu.command_name(pdu) do
       :deliver_sm ->
-        RapidSMS.send_to_rapidsms(pdu)
+        RapidSMS.send_to_rapidsms(pdu, state.connection.mno)
 
       _ ->
         Logger.info("Got unhandled PDU: #{inspect(pdu)}")

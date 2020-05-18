@@ -8,38 +8,50 @@ defmodule Voomex.RapidSMS do
   @doc """
   Send the PDU to RapidSMS
   """
-  def send_to_rapidsms(pdu) do
-    pdu
-    |> pdu_to_request
+  def send_to_rapidsms(pdu, mno) do
+    parse_pdu(pdu)
+    |> Map.put(:mno, mno)
+    |> Map.put(:url, get_url(mno))
     |> Voomex.RapidSMS.Worker.new()
     |> Oban.insert()
   end
 
   @doc """
-  Convert a PDU to a request which matches the JSON expected by RapidSMS
+  Parse the PDU and pull out the data that we need, named by the keys that RapidSMS expects
   """
-  def pdu_to_request(pdu) do
-    config = Application.get_env(:voomex, Voomex.SMPP)
-
+  def parse_pdu(pdu) do
     %{
       content: pdu.mandatory.short_message,
       from_addr: pdu.mandatory.source_addr,
+      to_addr: pdu.mandatory.destination_addr
+    }
+  end
+
+  @doc """
+  Prepare the JSON body of the request, as expected by RapidSMS
+  """
+  def prepare_body(args) do
+    Jason.encode!(%{
+      content: args["content"],
+      from_addr: args["from_addr"],
       group: nil,
       in_reply_to: nil,
       message_id: UUID.generate(),
       message_type: "user_message",
       timestamp: DateTime.utc_now() |> DateTime.to_string(),
-      to_addr: pdu.mandatory.destination_addr,
-      transport_name: config[:transport_name],
+      to_addr: args["to_addr"],
+      transport_name: "#{args["mno"]}_smpp_transport_#{args["to_addr"]}",
       transport_type: "sms"
-    }
+    })
   end
 
   @doc """
-  Send a HTTP post to the configured RapidSMS endpoint
+  Pull the RapidSMS URL for this MNO from our config
   """
-  def post_request(request) do
-    config = Application.get_env(:voomex, Voomex.RapidSMS)
-    Mojito.post(config[:url], [{"content-type", "application/json"}], request)
+  def get_url(mno) do
+    Application.get_env(:voomex, Voomex.RapidSMS)
+    |> Keyword.get(:connections, [])
+    |> Enum.find(fn connection -> connection.mno == mno end)
+    |> Map.get(:url)
   end
 end

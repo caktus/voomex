@@ -71,7 +71,7 @@ defmodule Voomex.SMPP.Monitor do
     case TetherSupervisor.start_connection(connection) do
       {:ok, pid} ->
         Process.link(pid)
-        Logger.debug("Connected to MNO", tag: :smpp)
+        Logger.debug("Connected to MNO: #{connection.mno}", tag: :smpp)
 
         {:noreply, update_connection_pid(state, connection, pid)}
 
