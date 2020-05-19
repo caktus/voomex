@@ -9,6 +9,8 @@ defmodule Voomex.SMPP.Connection do
 
   alias Voomex.RapidSMS
 
+  defstruct [:mno, :source_addr, :host, :port, :transport_name, :system_id, :password, :pid]
+
   # External API
 
   def name(connection) do
@@ -67,11 +69,11 @@ defmodule Voomex.SMPP.Connection do
   def handle_resp(pdu, _original_pdu, state) do
     case SMPPEX.Pdu.command_name(pdu) do
       :submit_sm_resp ->
-        Logger.info("MNO Submission response: #{inspect(pdu)}")
+        Logger.info("MNO submit_sm_resp: #{inspect(pdu)}")
         {:ok, state}
 
       :bind_transceiver_resp ->
-        Logger.info("MNO bind_transceiver_response: #{inspect(pdu)}")
+        Logger.info("MNO bind_transceiver_resp: #{inspect(pdu)}")
         {:ok, state}
 
       _ ->

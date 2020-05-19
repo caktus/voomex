@@ -10,7 +10,7 @@ defmodule VoomexWeb.SMSController do
         "from_addr" => from_addr
       })
       when is_list(to_addr) do
-    # TODO: may also need "in_reply_to" and "metadata.rapidsms_msg_id"
+    # NOTE: may also need "in_reply_to" and "metadata.rapidsms_msg_id"
     SMPP.send_to_mno(mno, from_addr, to_addr, content)
 
     json(conn, :ok)

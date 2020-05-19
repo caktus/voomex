@@ -3,7 +3,12 @@ defmodule Voomex.SMPP do
   Voomex.SMPP handles the interaction between the web API and the mobile network operator (MNO).
   """
 
-  @callback send_submit_sm(mno :: String.t(), from_addr :: String.t(), submit_sm :: map()) :: :ok
+  @callback send_submit_sm(
+              mno :: String.t(),
+              from_addr :: String.t(),
+              submit_sm :: SMPPEX.Pdu.t()
+            ) ::
+              :ok | {:error, atom()}
 
   @callback send_to_mno(
               mno :: String.t(),

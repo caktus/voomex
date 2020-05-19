@@ -28,10 +28,10 @@ defmodule Voomex.RapidSMS do
   end
 
   @doc """
-  Prepare the JSON body of the request, as expected by RapidSMS
+  Prepare the map expected by RapidSMS
   """
   def prepare_body(args) do
-    Jason.encode!(%{
+    %{
       content: args["content"],
       from_addr: args["from_addr"],
       group: nil,
@@ -42,16 +42,16 @@ defmodule Voomex.RapidSMS do
       to_addr: args["to_addr"],
       transport_name: "#{args["mno"]}_smpp_transport_#{args["to_addr"]}",
       transport_type: "sms"
-    })
+    }
   end
 
   @doc """
-  Pull the RapidSMS URL for this MNO from our config
+  Return the RapidSMS URL for this MNO from our config
   """
   def get_url(mno) do
     Application.get_env(:voomex, Voomex.RapidSMS)
     |> Keyword.get(:connections, [])
-    |> Enum.find(fn connection -> connection.mno == mno end)
+    |> Enum.find(%{}, fn connection -> connection.mno == mno end)
     |> Map.get(:url)
   end
 end

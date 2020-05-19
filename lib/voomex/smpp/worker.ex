@@ -19,7 +19,6 @@ defmodule Voomex.SMPP.Worker do
       }) do
     submit_sm = PDU.submit_sm(dest_addr, message)
 
-    # TODO validate what comes back from this, raise an error if there is one
     SMPP.send_submit_sm(mno, from_addr, submit_sm)
   end
 end

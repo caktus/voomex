@@ -1,8 +1,3 @@
-defmodule Voomex.SMPP.Monitor.Connection do
-  @moduledoc false
-  defstruct [:mno, :source_addr, :host, :port, :transport_name, :system_id, :password, :pid]
-end
-
 defmodule Voomex.SMPP.Monitor do
   @moduledoc """
   Monitor the SMPP connection process
@@ -54,7 +49,7 @@ defmodule Voomex.SMPP.Monitor do
 
     connections =
       Enum.map(opts[:connections], fn connection ->
-        struct(Voomex.SMPP.Monitor.Connection, connection)
+        struct(Voomex.SMPP.Connection, connection)
       end)
 
     Enum.each(connections, fn connection ->

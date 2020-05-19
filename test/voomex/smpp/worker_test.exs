@@ -6,13 +6,13 @@ defmodule Voomex.SMPP.WorkerTest do
   describe "sending a message" do
     test "successfully" do
       Worker.perform(%{
-        "dest_addr" => "1231231234",
+        "dest_addr" => "19195551212",
         "message" => "Hello",
-        "mno" => "my_mno",
+        "mno" => "libyana",
         "from_addr" => "10020"
       })
 
-      assert_received {:send_submit_sm, "my_mno", "10020", pdu}
+      assert_received {:send_submit_sm, "libyana", "10020", pdu}
 
       assert pdu.mandatory.short_message == "Hello"
     end

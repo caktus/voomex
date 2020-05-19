@@ -4,7 +4,7 @@ defmodule VoomexWeb.SMSControllerTest do
   describe "sending sms messages to the network" do
     test "successful", %{conn: conn} do
       data = %{
-        "to_addr" => ["12345", "23456"],
+        "to_addr" => ["19195551212", "19195553434"],
         "content" => "Hello, world",
         "from_addr" => "10020"
       }
@@ -13,12 +13,13 @@ defmodule VoomexWeb.SMSControllerTest do
 
       assert json_response(conn, 200) == "ok"
 
-      assert_received {:send_to_mno, "my_mno", "10020", ["12345", "23456"], "Hello, world"}
+      assert_received {:send_to_mno, "my_mno", "10020", ["19195551212", "19195553434"],
+                       "Hello, world"}
     end
 
     test "failure when to_addr is not a list", %{conn: conn} do
       data = %{
-        "to_addr" => "12345",
+        "to_addr" => "19195551212",
         "content" => "Hello, world",
         "from_addr" => "10020"
       }
