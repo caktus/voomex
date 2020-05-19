@@ -37,23 +37,27 @@ defmodule Voomex.SMPP.Connection do
   end
 
   @impl true
-  def init(_socket, _transport, config) do
-    Registry.register(Voomex.SMPP.ConnectionRegistry, {config.mno, config.source_addr}, self())
+  def init(_socket, _transport, connection) do
+    Registry.register(
+      Voomex.SMPP.ConnectionRegistry,
+      {connection.mno, connection.source_addr},
+      self()
+    )
 
     # send ourselves a message to bind to the MNO
     send(self(), :bind)
 
-    {:ok, %{config: config}}
+    {:ok, %{connection: connection}}
   end
 
   @impl true
-  def handle_info(:bind, state = %{config: config}) do
+  def handle_info(:bind, state = %{connection: connection}) do
     opts = %{
       # Using SMPP version 3.4
       interface_version: 0x34
     }
 
-    pdu = SMPPEX.Pdu.Factory.bind_transceiver(config.system_id, config.password, opts)
+    pdu = SMPPEX.Pdu.Factory.bind_transceiver(connection.system_id, connection.password, opts)
     Logger.info("Outgoing bind_transceiver pdu: #{inspect(pdu)}")
 
     {:noreply, [pdu], state}
@@ -67,7 +71,7 @@ defmodule Voomex.SMPP.Connection do
         {:ok, state}
 
       :bind_transceiver_resp ->
-        Logger.info("Incoming bind_transceiver_response: #{inspect(pdu)}")
+        Logger.info("MNO bind_transceiver_response: #{inspect(pdu)}")
         {:ok, state}
 
       _ ->
