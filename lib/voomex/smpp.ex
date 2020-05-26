@@ -5,14 +5,15 @@ defmodule Voomex.SMPP do
 
   @callback send_submit_sm(
               mno :: String.t(),
-              from_addr :: String.t(),
-              submit_sm :: SMPPEX.Pdu.t()
+              source_addr :: String.t(),
+              dest_addr :: String.t(),
+              message :: String.t()
             ) ::
               :ok | {:error, atom()}
 
   @callback send_to_mno(
               mno :: String.t(),
-              from_addr :: String.t(),
+              source_addr :: String.t(),
               dest_addresses :: [String.t()],
               message :: String.t()
             ) ::
@@ -23,14 +24,14 @@ defmodule Voomex.SMPP do
   @doc """
   Send a message to the destination address
   """
-  def send_submit_sm(mno, from_addr, submit_sm) do
-    @callback_module.send_submit_sm(mno, from_addr, submit_sm)
+  def send_submit_sm(mno, source_addr, dest_addr, submit_sm) do
+    @callback_module.send_submit_sm(mno, source_addr, dest_addr, submit_sm)
   end
 
   @doc """
   Send a message to the destination address
   """
-  def send_to_mno(mno, from_addr, dest_addresses, message) do
-    @callback_module.send_to_mno(mno, from_addr, dest_addresses, message)
+  def send_to_mno(mno, source_addr, dest_addresses, message) do
+    @callback_module.send_to_mno(mno, source_addr, dest_addresses, message)
   end
 end

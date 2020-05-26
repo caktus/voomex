@@ -6,7 +6,6 @@ defmodule Voomex.SMPP.Worker do
   use Oban.Worker, queue: :to_smpp
 
   alias Voomex.SMPP
-  alias Voomex.SMPP.PDU
 
   @impl true
   def perform(args, _job), do: perform(args)
@@ -15,10 +14,8 @@ defmodule Voomex.SMPP.Worker do
         "dest_addr" => dest_addr,
         "message" => message,
         "mno" => mno,
-        "from_addr" => from_addr
+        "source_addr" => source_addr
       }) do
-    submit_sm = PDU.submit_sm(from_addr, dest_addr, message)
-
-    SMPP.send_submit_sm(mno, from_addr, submit_sm)
+    SMPP.send_submit_sm(mno, source_addr, dest_addr, message)
   end
 end
