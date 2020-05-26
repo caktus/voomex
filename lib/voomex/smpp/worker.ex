@@ -17,7 +17,7 @@ defmodule Voomex.SMPP.Worker do
         "mno" => mno,
         "from_addr" => from_addr
       }) do
-    submit_sm = PDU.submit_sm(dest_addr, message)
+    submit_sm = PDU.submit_sm(from_addr, dest_addr, message)
 
     SMPP.send_submit_sm(mno, from_addr, submit_sm)
   end

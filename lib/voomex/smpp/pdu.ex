@@ -9,8 +9,7 @@ defmodule Voomex.SMPP.PDU do
   @doc """
   Source tuple for messages
   """
-  def source(config) do
-    source_addr = config[:source_addr]
+  def source(source_addr, config) do
     source_ton = config[:source_ton]
     source_npi = config[:source_npi]
 
@@ -30,7 +29,11 @@ defmodule Voomex.SMPP.PDU do
   @doc """
   Create a `submit_sm` message with configured values
   """
-  def submit_sm(dest_addr, message, config \\ config()) do
-    SMPPEX.Pdu.Factory.submit_sm(source(config), destination(dest_addr, config), message)
+  def submit_sm(from_addr, dest_addr, message, config \\ config()) do
+    SMPPEX.Pdu.Factory.submit_sm(
+      source(from_addr, config),
+      destination(dest_addr, config),
+      message
+    )
   end
 end
