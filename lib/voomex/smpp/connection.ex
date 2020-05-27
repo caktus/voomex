@@ -9,7 +9,19 @@ defmodule Voomex.SMPP.Connection do
 
   alias Voomex.RapidSMS
 
-  defstruct [:mno, :source_addr, :host, :port, :transport_name, :system_id, :password, :pid]
+  defstruct [
+    :mno,
+    :source_addr,
+    :source_ton,
+    :source_npi,
+    :dest_ton,
+    :dest_npi,
+    :host,
+    :port,
+    :system_id,
+    :password,
+    :pid
+  ]
 
   # External API
 
@@ -93,5 +105,11 @@ defmodule Voomex.SMPP.Connection do
     end
 
     {:ok, state}
+  end
+
+  @impl true
+  def handle_call({:submit_sm, dest_addr, message}, _from, state) do
+    pdu = Voomex.SMPP.PDU.submit_sm(state.connection, dest_addr, message)
+    {:reply, :ok, [pdu], state}
   end
 end

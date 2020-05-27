@@ -8,10 +8,11 @@ defmodule Voomex.SMPP.Implementation do
   alias Voomex.SMPP.Connection
 
   @impl true
-  def send_submit_sm(mno, from_addr, submit_sm) do
-    case Voomex.SMPP.Monitor.booted?(mno, from_addr) do
+  def send_submit_sm(mno, source_addr, dest_addr, message) do
+    case Voomex.SMPP.Monitor.booted?(mno, source_addr) do
       true ->
-        SMPPEX.Session.send_pdu(Connection.name(mno, from_addr), submit_sm)
+        Connection.name(mno, source_addr)
+        |> SMPPEX.Session.call({:submit_sm, dest_addr, message})
 
       false ->
         {:error, :not_booted}
@@ -19,9 +20,9 @@ defmodule Voomex.SMPP.Implementation do
   end
 
   @impl true
-  def send_to_mno(mno, from_addr, dest_addresses, message) do
+  def send_to_mno(mno, source_addr, dest_addresses, message) do
     Enum.each(dest_addresses, fn dest_addr ->
-      %{dest_addr: dest_addr, message: message, mno: mno, from_addr: from_addr}
+      %{dest_addr: dest_addr, message: message, mno: mno, source_addr: source_addr}
       |> Voomex.SMPP.Worker.new()
       |> Oban.insert()
     end)

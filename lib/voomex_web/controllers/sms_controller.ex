@@ -4,14 +4,14 @@ defmodule VoomexWeb.SMSController do
   alias Voomex.SMPP
 
   def send(conn, %{
-        "to_addr" => to_addr,
+        "to_addr" => dest_addr,
         "content" => content,
         "mno" => mno,
-        "from_addr" => from_addr
+        "from_addr" => source_addr
       })
-      when is_list(to_addr) do
+      when is_list(dest_addr) do
     # NOTE: may also need "in_reply_to" and "metadata.rapidsms_msg_id"
-    SMPP.send_to_mno(mno, from_addr, to_addr, content)
+    SMPP.send_to_mno(mno, source_addr, dest_addr, content)
 
     json(conn, :ok)
   end
