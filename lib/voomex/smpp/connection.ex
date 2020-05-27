@@ -109,7 +109,10 @@ defmodule Voomex.SMPP.Connection do
 
   @impl true
   def handle_call({:submit_sm, dest_addr, message}, _from, state) do
+    :telemetry.execute([:voomex, :mno, :message_sent], %{count: 1}, state.connection)
+
     pdu = Voomex.SMPP.PDU.submit_sm(state.connection, dest_addr, message)
+
     {:reply, :ok, [pdu], state}
   end
 end
