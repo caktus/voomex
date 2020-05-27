@@ -61,8 +61,6 @@ defmodule Voomex.Telemetry.Reporters do
 
   use GenServer
 
-  alias Voomex.ObanReporter
-
   def start_link(opts) do
     GenServer.start_link(__MODULE__, [], opts)
   end
@@ -73,7 +71,8 @@ defmodule Voomex.Telemetry.Reporters do
 
   def handle_continue(:initialize, state) do
     reporters = [
-      ObanReporter
+      Voomex.ObanReporter,
+      Voomex.SMPPEXReporter
     ]
 
     Enum.each(reporters, fn reporter ->
