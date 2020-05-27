@@ -17,7 +17,7 @@ config :voomex, Voomex.SMPP,
   connections: [
     %{
       mno: "almadar",
-      source_addr: "10020",
+      source_addrs: ["10020", "10030"],
       source_ton: 1,
       source_npi: 1,
       dest_ton: 1,
@@ -29,7 +29,7 @@ config :voomex, Voomex.SMPP,
     },
     %{
       mno: "libyana",
-      source_addr: "10020",
+      source_addrs: ["10020", "10030"],
       source_ton: 1,
       source_npi: 1,
       dest_ton: 1,

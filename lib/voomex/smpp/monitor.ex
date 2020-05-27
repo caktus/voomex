@@ -10,6 +10,7 @@ defmodule Voomex.SMPP.Monitor do
 
   require Logger
 
+  alias Voomex.SMPP.Connection
   alias Voomex.SMPP.TetherSupervisor
 
   @connection_boot_delay 1_500
@@ -47,10 +48,7 @@ defmodule Voomex.SMPP.Monitor do
 
     :ets.new(__MODULE__, [:set, :protected, :named_table])
 
-    connections =
-      Enum.map(opts[:connections], fn connection ->
-        struct(Voomex.SMPP.Connection, connection)
-      end)
+    connections = Enum.flat_map(opts[:connections], &Connection.initialize_connection_struct/1)
 
     Enum.each(connections, fn connection ->
       Process.send_after(self(), [:connect, :initial, connection], @connection_boot_delay)
