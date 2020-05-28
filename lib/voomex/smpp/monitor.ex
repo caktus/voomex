@@ -69,7 +69,7 @@ defmodule Voomex.SMPP.Monitor do
         {:noreply, update_connection_pid(state, connection, pid)}
 
       {:error, error} ->
-        Logger.debug("Connection could not connect - #{inspect(error)}", tag: :smpp)
+        Logger.debug("Connection to MNO failed: #{inspect(error)}", tag: :smpp)
         restart_connection(connection)
         {:noreply, state}
     end
