@@ -43,7 +43,8 @@ defmodule Voomex.Telemetry do
       summary("vm.total_run_queue_lengths.io"),
 
       # MNO Metrics
-      counter("voomex.mno.message_sent.count", tags: [:mno, :source_addr])
+      counter("voomex.mno.deliver_sm.count", tags: [:mno, :source_addr]),
+      counter("voomex.mno.submit_sm.count", tags: [:mno, :source_addr])
     ]
   end
 

@@ -114,6 +114,7 @@ defmodule Voomex.SMPP.Connection do
   def handle_pdu(pdu, state) do
     case SMPPEX.Pdu.command_name(pdu) do
       :deliver_sm ->
+        :telemetry.execute([:voomex, :mno, :deliver_sm], %{count: 1}, state.connection)
         RapidSMS.send_to_rapidsms(pdu, state.connection.mno)
 
       _ ->
@@ -125,7 +126,7 @@ defmodule Voomex.SMPP.Connection do
 
   @impl true
   def handle_call({:submit_sm, dest_addr, message}, _from, state) do
-    :telemetry.execute([:voomex, :mno, :message_sent], %{count: 1}, state.connection)
+    :telemetry.execute([:voomex, :mno, :submit_sm], %{count: 1}, state.connection)
 
     pdu = Voomex.SMPP.PDU.submit_sm(state.connection, dest_addr, message)
 
