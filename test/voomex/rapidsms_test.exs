@@ -1,10 +1,41 @@
 defmodule Voomex.RapidSMS.Test do
   use ExUnit.Case
+  use Oban.Testing, repo: Voomex.Repo
 
   alias Voomex.RapidSMS
 
-  describe "parse_pdu" do
-    test "gets expected values from pdu" do
+  describe "send_to_rapidsms" do
+    test "inserts oban job in DB" do
+      from_addr = "19195551212"
+      to_addr = "10020"
+      content = "Test message"
+      mno = "almadar"
+
+      pdu = %SMPPEX.Pdu{
+        mandatory: %{
+          source_addr: from_addr,
+          destination_addr: to_addr,
+          short_message: content
+        }
+      }
+
+      RapidSMS.send_to_rapidsms(pdu, mno)
+
+      assert_enqueued(
+        worker: RapidSMS.Worker,
+        args: %{
+          content: content,
+          from_addr: from_addr,
+          to_addr: to_addr,
+          mno: mno,
+          url: "http://localhost:8002/backend/vumi-almadar/"
+        }
+      )
+    end
+  end
+
+  describe "parse_pdu_and_mno" do
+    test "gets expected values from pdu and mno" do
       pdu = %{
         mandatory: %{
           source_addr: "19195551212",
@@ -13,11 +44,14 @@ defmodule Voomex.RapidSMS.Test do
         }
       }
 
-      request = RapidSMS.parse_pdu(pdu)
+      request = RapidSMS.parse_pdu_and_mno(pdu, "almadar")
 
       assert request.from_addr == "19195551212"
       assert request.to_addr == "10020"
       assert request.content == "Test message"
+
+      assert request.mno == "almadar"
+      assert request.url == "http://localhost:8002/backend/vumi-almadar/"
     end
   end
 

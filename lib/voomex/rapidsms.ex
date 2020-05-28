@@ -9,9 +9,7 @@ defmodule Voomex.RapidSMS do
   Send the PDU to RapidSMS
   """
   def send_to_rapidsms(pdu, mno) do
-    parse_pdu(pdu)
-    |> Map.put(:mno, mno)
-    |> Map.put(:url, get_url(mno))
+    parse_pdu_and_mno(pdu, mno)
     |> Voomex.RapidSMS.Worker.new()
     |> Oban.insert()
   end
@@ -19,11 +17,13 @@ defmodule Voomex.RapidSMS do
   @doc """
   Parse the PDU and pull out the data that we need, named by the keys that RapidSMS expects
   """
-  def parse_pdu(pdu) do
+  def parse_pdu_and_mno(pdu, mno) do
     %{
       content: pdu.mandatory.short_message,
       from_addr: pdu.mandatory.source_addr,
-      to_addr: pdu.mandatory.destination_addr
+      to_addr: pdu.mandatory.destination_addr,
+      mno: mno,
+      url: get_url(mno)
     }
   end
 
