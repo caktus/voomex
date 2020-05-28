@@ -26,7 +26,7 @@ defmodule Voomex.SMPP.Connection do
   @doc """
   Turns a config connection into a internal `Connection` struct
 
-  Takes `source_addrs` and maps to multiple connections with a single `source_addr`.
+  Takes `connection.source_addrs` and maps to multiple connections each with a single `source_addr`.
   """
   def initialize_connection_struct(connection) do
     Enum.map(connection.source_addrs, fn source_addr ->
