@@ -13,7 +13,8 @@ config :voomex, Voomex.SMPP,
 config :voomex, Voomex.Repo,
   url: System.get_env("DATABASE_URL"),
   database: "voomex_test",
-  hostname: "localhost"
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox
 
 config :voomex, Oban,
   crontab: false,
