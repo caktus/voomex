@@ -9,6 +9,8 @@ defmodule Voomex.SMPP.Connection do
 
   alias Voomex.RapidSMS
 
+  @split_at 130
+
   defstruct [
     :mno,
     :source_addr,
@@ -77,7 +79,7 @@ defmodule Voomex.SMPP.Connection do
     # send ourselves a message to bind to the MNO
     send(self(), :bind)
 
-    {:ok, %{connection: connection}}
+    {:ok, %{connection: connection, ref_num: 0}}
   end
 
   @impl true
@@ -128,8 +130,24 @@ defmodule Voomex.SMPP.Connection do
   def handle_call({:submit_sm, dest_addr, message}, _from, state) do
     :telemetry.execute([:voomex, :mno, :submit_sm], %{count: 1}, state.connection)
 
-    pdu = Voomex.SMPP.PDU.submit_sm(state.connection, dest_addr, message)
+    # ref_num is a 2 byte number which must be the same for all parts of a split message
+    ref_num = rem(state.ref_num + 1, 0xFF)
 
-    {:reply, :ok, [pdu], state}
+    case SMPPEX.Pdu.Multipart.split_message(ref_num, message, @split_at) do
+      {:ok, :unsplit} ->
+        Logger.info("#{byte_size(message)} byte message didn't need to be split.")
+        pdu = Voomex.SMPP.PDU.submit_sm(state.connection, dest_addr, message)
+        {:reply, :ok, [pdu], %{state | ref_num: ref_num}}
+
+      {:ok, :split, parts} ->
+        Logger.info("Message is being split into #{length(parts)} parts.")
+        # since called with a list of parts, this will return a list
+        pdu_list = Voomex.SMPP.PDU.submit_sm(state.connection, dest_addr, parts)
+        {:reply, :ok, pdu_list, %{state | ref_num: ref_num}}
+
+      {:error, reason} ->
+        Logger.error("Could not split message (#{message}). Error: #{inspect(reason)}")
+        {:reply, :ok, %{state | ref_num: ref_num}}
+    end
   end
 end

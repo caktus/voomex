@@ -20,5 +20,16 @@ defmodule Voomex.SMPP.PDUTest do
       assert pdu.mandatory.source_addr_ton == 2
       assert pdu.mandatory.source_addr_npi == 3
     end
+
+    test "returns multiple PDUs if multiple parts present" do
+      connection = %Connection{}
+      pdu_list = PDU.submit_sm(connection, "19195551212", ["Test", " message"])
+
+      assert length(pdu_list) == 2
+
+      for pdu <- pdu_list do
+        assert pdu.mandatory.esm_class == 0x40
+      end
+    end
   end
 end
