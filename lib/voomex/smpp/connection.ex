@@ -11,19 +11,21 @@ defmodule Voomex.SMPP.Connection do
 
   @split_at 130
 
-  defstruct [
-    :mno,
-    :source_addr,
-    :source_ton,
-    :source_npi,
-    :dest_ton,
-    :dest_npi,
-    :host,
-    :port,
-    :system_id,
-    :password,
-    :pid
-  ]
+  # struct with defaults for the connection, which can be overriden in config.exs
+  defstruct mno: nil,
+            source_addr: nil,
+            host: nil,
+            port: nil,
+            system_id: nil,
+            password: nil,
+            source_ton: 0,
+            source_npi: 0,
+            dest_ton: 1,
+            dest_npi: 1,
+            data_coding: 8,
+            enquire_link_limit: 5_000,
+            service_type: nil,
+            pid: nil
 
   @doc """
   Turns a config connection into a internal `Connection` struct
@@ -53,7 +55,9 @@ defmodule Voomex.SMPP.Connection do
 
   def start_link(connection) do
     # Start the MNO connection (but don't bind yet)
-    SMPPEX.ESME.start_link(connection.host, connection.port, {__MODULE__, connection})
+    SMPPEX.ESME.start_link(connection.host, connection.port, {__MODULE__, connection},
+      esme_opts: [enquire_link_limit: connection.enquire_link_limit]
+    )
   end
 
   # GenServer implementation
@@ -70,6 +74,9 @@ defmodule Voomex.SMPP.Connection do
 
   @impl true
   def init(_socket, _transport, connection) do
+    # update our connection struct with our PID
+    connection = %{connection | pid: self()}
+
     Registry.register(
       Voomex.SMPP.ConnectionRegistry,
       {connection.mno, connection.source_addr},
@@ -117,6 +124,7 @@ defmodule Voomex.SMPP.Connection do
     case SMPPEX.Pdu.command_name(pdu) do
       :deliver_sm ->
         :telemetry.execute([:voomex, :mno, :deliver_sm], %{count: 1}, state.connection)
+        Logger.info("SMPP incoming: #{inspect(pdu)}", type: :smpp)
         RapidSMS.send_to_rapidsms(pdu, state.connection.mno)
 
       _ ->
@@ -129,9 +137,13 @@ defmodule Voomex.SMPP.Connection do
   @impl true
   def handle_call({:submit_sm, dest_addr, message}, _from, state) do
     :telemetry.execute([:voomex, :mno, :submit_sm], %{count: 1}, state.connection)
+    Logger.info("SMPP outgoing: #{inspect(message)}", type: :smpp)
 
     # ref_num is a 2 byte number which must be the same for all parts of a split message
     ref_num = rem(state.ref_num + 1, 0xFF)
+
+    # encode the message as UTF16be
+    message = :unicode.characters_to_binary(message, :utf8, {:utf16, :big})
 
     case SMPPEX.Pdu.Multipart.split_message(ref_num, message, @split_at) do
       {:ok, :unsplit} ->
