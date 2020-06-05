@@ -24,7 +24,8 @@ defmodule VoomexWeb.Router do
   scope "/api/v1", VoomexWeb do
     pipe_through :api
 
-    post "/send/:mno", SMSController, :send
+    # named 'rapidsms' to match the current libya elections set up
+    post "/rapidsms/:mno", SMSController, :send
   end
 
   if Mix.env() == :dev do
