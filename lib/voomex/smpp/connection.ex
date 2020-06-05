@@ -90,7 +90,7 @@ defmodule Voomex.SMPP.Connection do
   end
 
   @impl true
-  def handle_info(:bind, state = %{connection: connection}) do
+  def handle_info(:bind, %{connection: connection} = state) do
     opts = %{
       # Using SMPP version 3.4
       interface_version: 0x34
