@@ -17,7 +17,15 @@ config :voomex, Voomex.SMPP,
   connections: [
     %{
       mno: "almadar",
-      source_addrs: ["10020", "10030"],
+      source_addr: "10020",
+      host: "localhost",
+      port: 2775,
+      system_id: "smppclient1",
+      password: "password"
+    },
+    %{
+      mno: "almadar",
+      source_addr: "10040",
       host: "localhost",
       port: 2775,
       system_id: "smppclient1",
@@ -25,7 +33,7 @@ config :voomex, Voomex.SMPP,
     },
     %{
       mno: "libyana",
-      source_addrs: ["10020", "10030"],
+      source_addr: "10020",
       host: "localhost",
       port: 2776,
       system_id: "smppclient1",
