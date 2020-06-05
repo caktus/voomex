@@ -25,6 +25,18 @@ defmodule Voomex.RapidSMS do
       mno: mno,
       url: get_url(mno)
     }
+    |> map_to_addr()
+  end
+
+  @doc """
+  Libyana currently sets to_addr to 150 instead of 15015, so we map it properly.
+  """
+  def map_to_addr(%{mno: "libyana", to_addr: "150"} = args) do
+    %{args | to_addr: "15015"}
+  end
+
+  def map_to_addr(args) do
+    args
   end
 
   @doc """

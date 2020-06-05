@@ -40,5 +40,7 @@ defmodule Voomex.SMPP.PDU do
       destination(connection, dest_addr),
       message
     )
+    |> SMPPEX.Pdu.set_mandatory_field(:service_type, connection.service_type)
+    |> SMPPEX.Pdu.set_mandatory_field(:data_coding, connection.data_coding)
   end
 end

@@ -18,10 +18,6 @@ config :voomex, Voomex.SMPP,
     %{
       mno: "almadar",
       source_addrs: ["10020", "10030"],
-      source_ton: 1,
-      source_npi: 1,
-      dest_ton: 1,
-      dest_npi: 1,
       host: "localhost",
       port: 2775,
       system_id: "smppclient1",
@@ -30,14 +26,12 @@ config :voomex, Voomex.SMPP,
     %{
       mno: "libyana",
       source_addrs: ["10020", "10030"],
-      source_ton: 1,
-      source_npi: 1,
-      dest_ton: 1,
-      dest_npi: 1,
       host: "localhost",
       port: 2776,
       system_id: "smppclient1",
-      password: "password"
+      password: "password",
+      dest_ton: 0,
+      service_type: "www"
     }
   ]
 
