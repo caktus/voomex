@@ -32,18 +32,56 @@ config :voomex, Voomex.Repo, url: System.get_env("DATABASE_URL")
 config :voomex, Voomex.SMPP,
   start: true,
   callback_module: Voomex.SMPP.Implementation,
-  host: System.get_env("SMPP_HOST"),
-  port: String.to_integer(System.get_env("SMPP_PORT")),
-  transport_name: System.get_env("SMPP_TRANSPORT_NAME"),
-  system_id: System.get_env("SMPP_SYSTEM_ID"),
-  password: System.get_env("SMPP_PASSWORD"),
-  source_addr: System.get_env("SMPP_SOURCE_ADDR"),
-  source_ton: 1,
-  source_npi: 1,
-  dest_ton: 1,
-  dest_npi: 1
+  connections: [
+    %{
+      mno: "almadar",
+      source_addr: "10020",
+      host: System.get_env("ALMADAR_HOST"),
+      port: String.to_integer(System.get_env("ALMADAR_PORT")),
+      system_id: System.get_env("ALMADAR_10020_SYSTEM_ID"),
+      password: System.get_env("ALMADAR_10020_PASSWORD")
+    },
+    %{
+      mno: "almadar",
+      source_addr: "10040",
+      host: System.get_env("ALMADAR_HOST"),
+      port: String.to_integer(System.get_env("ALMADAR_PORT")),
+      system_id: System.get_env("ALMADAR_10040_SYSTEM_ID"),
+      password: System.get_env("ALMADAR_10040_PASSWORD")
+    },
+    %{
+      mno: "libyana",
+      source_addr: "10020",
+      host: System.get_env("LIBYANA_HOST"),
+      port: String.to_integer(System.get_env("LIBYANA_PORT")),
+      system_id: System.get_env("LIBYANA_10020_SYSTEM_ID"),
+      password: System.get_env("LIBYANA_10020_PASSWORD"),
+      dest_ton: 0,
+      service_type: "www"
+    },
+    %{
+      mno: "libyana",
+      source_addr: "10040",
+      host: System.get_env("LIBYANA_HOST"),
+      port: String.to_integer(System.get_env("LIBYANA_PORT")),
+      system_id: System.get_env("LIBYANA_10040_SYSTEM_ID"),
+      password: System.get_env("LIBYANA_10040_PASSWORD"),
+      dest_ton: 0,
+      service_type: "www"
+    }
+  ]
 
-config :voomex, Voomex.RapidSMS, url: System.get_env("RAPIDSMS_URL")
+config :voomex, Voomex.RapidSMS,
+  connections: [
+    %{
+      mno: "almadar",
+      url: System.get_env("ALMADAR_RAPIDSMS_URL")
+    },
+    %{
+      mno: "libyana",
+      url: System.get_env("LIBYANA_RAPIDSMS_URL")
+    }
+  ]
 
 config :voomex, Oban,
   repo: Voomex.Repo,
