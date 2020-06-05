@@ -1,9 +1,9 @@
 #!/bin/bash
-set -e
+set -ex
 
 rm -rf tmp/build
 mkdir -p tmp/build
-git archive --format=tar master | tar x -C tmp/build/
+git archive --format=tar release-updates | tar x -C tmp/build/
 cd tmp/build
 
 docker build -f Dockerfile.releaser -t voomex:releaser .
