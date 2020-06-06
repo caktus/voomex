@@ -35,6 +35,14 @@ defmodule Voomex.RapidSMS do
     %{args | to_addr: "15015"}
   end
 
+  def map_to_addr(%{mno: "libyana", to_addr: "21810020"} = args) do
+    %{args | to_addr: "10020"}
+  end
+
+  def map_to_addr(%{mno: "libyana", to_addr: "21810040"} = args) do
+    %{args | to_addr: "10040"}
+  end
+
   def map_to_addr(args) do
     args
   end
