@@ -25,7 +25,8 @@ config :voomex, VoomexWeb.Endpoint,
   url: [host: System.get_env("HOST"), port: 80],
   secret_key_base: secret_key_base,
   live_view: [signing_salt: live_view_salt],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  server: true
 
 config :voomex, Voomex.Repo, url: System.get_env("DATABASE_URL")
 
@@ -90,7 +91,7 @@ config :voomex, Oban,
 
 config :logger, :console,
   level: :info,
-  format: "$time $metadata[$level] $message\n",
+  format: "$date $time $metadata[$level] $message\n",
   metadata: [:request_id]
 
 config :phoenix, :json_library, Jason
