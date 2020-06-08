@@ -46,7 +46,7 @@ defmodule Voomex.MixProject do
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:postgrex, ">= 0.0.0"},
-      {:smppex, github: "caktus/smppex", branch: "add-telemetry"},
+      {:smppex, "~> 2.0"},
       {:telemetry_poller, "~> 0.4"},
       {:telemetry_metrics, "~> 0.4"}
     ]

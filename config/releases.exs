@@ -90,8 +90,8 @@ config :voomex, Oban,
   queues: [to_smpp: 10, to_rapidsms: 10]
 
 config :logger, :console,
-  level: :info,
+  level: :debug,
   format: "$date $time $metadata[$level] $message\n",
-  metadata: [:request_id]
+  metadata: [:request_id, :pid]
 
 config :phoenix, :json_library, Jason
