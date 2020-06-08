@@ -37,11 +37,37 @@ defmodule Voomex.SMPP.Connection do
     {:via, Registry, {Voomex.SMPP.ConnectionRegistry, {mno, source_addr}}}
   end
 
+  def transport_name(connection) do
+    "#{connection.mno}_#{connection.source_addr}"
+  end
+
   def start_link(connection) do
     # Start the MNO connection (but don't bind yet)
-    SMPPEX.ESME.start_link(connection.host, connection.port, {__MODULE__, connection},
-      esme_opts: [enquire_link_limit: connection.enquire_link_limit]
-    )
+    # copy/paste SMPPEX.ESME.start_link in order to use our LogTransportSession instead of Session
+    mod_with_args = {__MODULE__, connection}
+    host = connection.host
+    port = connection.port
+    transport = :ranch_tcp
+    timeout = 5000
+    sock_opts = [:binary, {:packet, 0}, {:active, :once}]
+    esme_opts = [enquire_link_limit: connection.enquire_link_limit]
+
+    case transport.connect(SMPPEX.Compat.to_charlist(host), port, sock_opts, timeout) do
+      {:ok, socket} ->
+        session_opts = {Voomex.SMPP.LogTransportSession, [mod_with_args, esme_opts], :esme}
+
+        case SMPPEX.TransportSession.start_link(socket, transport, session_opts) do
+          {:ok, pid} ->
+            {:ok, pid}
+
+          {:error, _} = error ->
+            transport.close(socket)
+            error
+        end
+
+      {:error, _} = error ->
+        error
+    end
   end
 
   # GenServer implementation
@@ -81,26 +107,8 @@ defmodule Voomex.SMPP.Connection do
     }
 
     pdu = SMPPEX.Pdu.Factory.bind_transceiver(connection.system_id, connection.password, opts)
-    Logger.info("Outgoing bind_transceiver pdu: #{inspect(pdu)}")
 
     {:noreply, [pdu], state}
-  end
-
-  @impl true
-  def handle_resp(pdu, _original_pdu, state) do
-    case SMPPEX.Pdu.command_name(pdu) do
-      :submit_sm_resp ->
-        Logger.info("MNO submit_sm_resp: #{inspect(pdu)}")
-        {:ok, state}
-
-      :bind_transceiver_resp ->
-        Logger.info("MNO bind_transceiver_resp: #{inspect(pdu)}")
-        {:ok, state}
-
-      _ ->
-        Logger.info("MNO other response received: #{inspect(pdu)}")
-        {:ok, state}
-    end
   end
 
   @impl true
@@ -108,7 +116,6 @@ defmodule Voomex.SMPP.Connection do
     case SMPPEX.Pdu.command_name(pdu) do
       :deliver_sm ->
         :telemetry.execute([:voomex, :mno, :deliver_sm], %{count: 1}, state.connection)
-        Logger.info("SMPP incoming: #{inspect(pdu)}", type: :smpp)
         RapidSMS.send_to_rapidsms(pdu, state.connection.mno)
 
       _ ->
@@ -121,7 +128,6 @@ defmodule Voomex.SMPP.Connection do
   @impl true
   def handle_call({:submit_sm, dest_addr, message}, _from, state) do
     :telemetry.execute([:voomex, :mno, :submit_sm], %{count: 1}, state.connection)
-    Logger.info("SMPP outgoing: #{inspect(message)}", type: :smpp)
 
     # ref_num is a 2 byte number which must be the same for all parts of a split message
     ref_num = rem(state.ref_num + 1, 0xFF)

@@ -4,7 +4,7 @@ defmodule Voomex.SMPP.Supervisor do
   """
 
   use Supervisor
-  alias Voomex.SMPP.{Monitor, TetherSupervisor}
+  alias Voomex.SMPP.{Connection, Monitor, TetherSupervisor}
 
   @doc false
   def start_link(opts) do
@@ -18,10 +18,8 @@ defmodule Voomex.SMPP.Supervisor do
 
     children =
       Enum.map(connections, fn connection ->
-        transport_name = "#{connection.mno}_smpp_transport_#{connection.source_addr}"
-
         Supervisor.child_spec({TetherSupervisor, [name: TetherSupervisor.name(connection)]},
-          id: transport_name
+          id: Connection.transport_name(connection)
         )
       end)
 

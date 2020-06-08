@@ -10,7 +10,7 @@ defmodule Voomex.SMPP.Monitor do
 
   require Logger
 
-  alias Voomex.SMPP.TetherSupervisor
+  alias Voomex.SMPP.{Connection, TetherSupervisor}
 
   @connection_boot_delay 1_500
   @connection_retry_delay 10_000
@@ -66,12 +66,16 @@ defmodule Voomex.SMPP.Monitor do
     case TetherSupervisor.start_connection(connection) do
       {:ok, pid} ->
         Process.link(pid)
-        Logger.debug("Connected to MNO: #{connection.mno}", tag: :smpp)
+        Logger.debug("Connected to MNO: #{Connection.transport_name(connection)}", tag: :smpp)
 
         {:noreply, update_connection_pid(state, connection, pid)}
 
       {:error, error} ->
-        Logger.debug("Connection to MNO failed: #{inspect(error)}", tag: :smpp)
+        Logger.debug(
+          "Connection to MNO #{Connection.transport_name(connection)} failed: #{inspect(error)}",
+          tag: :smpp
+        )
+
         restart_connection(connection)
         {:noreply, state}
     end

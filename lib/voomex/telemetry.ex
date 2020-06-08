@@ -72,8 +72,7 @@ defmodule Voomex.Telemetry.Reporters do
 
   def handle_continue(:initialize, state) do
     reporters = [
-      Voomex.ObanReporter,
-      Voomex.SMPPEXReporter
+      Voomex.ObanReporter
     ]
 
     Enum.each(reporters, fn reporter ->

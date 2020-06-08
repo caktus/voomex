@@ -60,7 +60,9 @@ config :voomex, VoomexWeb.Endpoint,
     ]
   ]
 
-config :logger, :console, format: "$date $time $metadata[$level] $message\n"
+config :logger, :console,
+  format: "$date $time $metadata[$level] $message\n",
+  metadata: [:pid]
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

@@ -43,4 +43,18 @@ defmodule Voomex.SMPP.PDU do
     |> SMPPEX.Pdu.set_mandatory_field(:service_type, connection.service_type)
     |> SMPPEX.Pdu.set_mandatory_field(:data_coding, connection.data_coding)
   end
+
+  @doc """
+  Return a pdu formatted for logging.
+
+  We change command_id and command_status from integers to their code names and then
+  drop the ref field, which we aren't using.
+  """
+  def pdu_for_log(pdu) do
+    pdu
+    |> Map.from_struct()
+    |> Map.put(:command_id, SMPPEX.Pdu.command_name(pdu))
+    |> Map.put(:command_status, SMPPEX.Pdu.Errors.format(pdu.command_status))
+    |> Map.drop([:ref])
+  end
 end
