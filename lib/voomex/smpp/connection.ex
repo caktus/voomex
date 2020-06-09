@@ -117,12 +117,13 @@ defmodule Voomex.SMPP.Connection do
       :deliver_sm ->
         :telemetry.execute([:voomex, :mno, :deliver_sm], %{count: 1}, state.connection)
         RapidSMS.send_to_rapidsms(pdu, state.connection.mno)
+        resp = SMPPEX.Pdu.Factory.deliver_sm_resp() |> SMPPEX.Pdu.as_reply_to(pdu)
+        {:ok, [resp], state}
 
       _ ->
-        Logger.info("Got unhandled PDU: #{inspect(pdu)}")
+        Logger.error("Got unhandled PDU: #{inspect(pdu)}")
+        {:ok, state}
     end
-
-    {:ok, state}
   end
 
   @impl true
