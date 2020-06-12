@@ -41,7 +41,7 @@ defmodule Voomex.SMPP.Monitor do
 
   @impl true
   def init(opts) do
-    Logger.debug("Starting the monitor", tag: :smpp)
+    Logger.info("Starting the monitor", tag: :smpp)
 
     Process.flag(:trap_exit, true)
 
@@ -66,12 +66,12 @@ defmodule Voomex.SMPP.Monitor do
     case TetherSupervisor.start_connection(connection) do
       {:ok, pid} ->
         Process.link(pid)
-        Logger.debug("Connected to MNO: #{Connection.transport_name(connection)}", tag: :smpp)
+        Logger.info("Connected to MNO: #{Connection.transport_name(connection)}", tag: :smpp)
 
         {:noreply, update_connection_pid(state, connection, pid)}
 
       {:error, error} ->
-        Logger.debug(
+        Logger.info(
           "Connection to MNO #{Connection.transport_name(connection)} failed: #{inspect(error)}",
           tag: :smpp
         )

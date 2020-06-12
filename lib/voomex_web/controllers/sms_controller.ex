@@ -1,6 +1,6 @@
 defmodule VoomexWeb.SMSController do
   use VoomexWeb, :controller
-
+  require Logger
   alias Voomex.SMPP
 
   def send(conn, %{
@@ -10,6 +10,7 @@ defmodule VoomexWeb.SMSController do
         "from_addr" => source_addr
       })
       when is_list(dest_addr) do
+    Logger.info("Message received by web API: #{source_addr}->#{dest_addr} #{mno} #{content}")
     # NOTE: may also need "in_reply_to" and "metadata.rapidsms_msg_id"
     SMPP.send_to_mno(mno, source_addr, dest_addr, content)
 
