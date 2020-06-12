@@ -14,7 +14,7 @@ defmodule Voomex.SMPP.LogTransportSession do
 
   @impl true
   def handle_pdu({:pdu, pdu} = pdu_parse_result, state) do
-    log("INCOMING: #{inspect(PDU.pdu_for_log(pdu))}", state)
+    log("INCOMING:", state, pdu)
     SMPPEX.Session.handle_pdu(pdu_parse_result, state)
   end
 
@@ -26,7 +26,7 @@ defmodule Voomex.SMPP.LogTransportSession do
 
   @impl true
   def handle_send_pdu_result(pdu, send_pdu_result, state) do
-    log("OUTGOING: #{inspect(PDU.pdu_for_log(pdu))}", state)
+    log("OUTGOING:", state, pdu)
     SMPPEX.Session.handle_send_pdu_result(pdu, send_pdu_result, state)
   end
 
@@ -69,7 +69,27 @@ defmodule Voomex.SMPP.LogTransportSession do
     SMPPEX.Session.code_change(old_vsn, state, extra)
   end
 
+  defp is_enquire(pdu) do
+    SMPPEX.Pdu.command_name(pdu) in [:enquire_link, :enquire_link_resp]
+  end
+
+  defp transport_name(state) do
+    Connection.transport_name(state.module_state.connection)
+  end
+
+  defp log(message, state, pdu) do
+    log_message = "#{transport_name(state)} #{message} #{inspect(PDU.pdu_for_log(pdu))}"
+
+    case is_enquire(pdu) do
+      true ->
+        Logger.debug(log_message)
+
+      false ->
+        Logger.info(log_message)
+    end
+  end
+
   defp log(message, state) do
-    Logger.info("#{Connection.transport_name(state.module_state.connection)} #{message}")
+    Logger.info("#{transport_name(state)} #{message}")
   end
 end
