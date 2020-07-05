@@ -49,7 +49,6 @@ jobs:
           paths: "_build"
 
       - run: pre-commit run --all-files
-      - run: mix coveralls.circleci
       - slack/status:
           success_message: ":caktus: ${CIRCLE_BRANCH} tests passed. <${CIRCLE_BUILD_URL}|Build> :successful:"
           failure_message: ":sadcactus: ${CIRCLE_BRANCH} tests failed. <${CIRCLE_BUILD_URL}|Build> :failed:"

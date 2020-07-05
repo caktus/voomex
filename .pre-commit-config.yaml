@@ -16,7 +16,7 @@
 
     - id: mix-coveralls
       name: 'elixir: mix coveralls'
-      entry: mix coveralls
+      entry: mix coveralls.circle
       language: system
       pass_filenames: false
       files: \.exs*$
