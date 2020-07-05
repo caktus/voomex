@@ -10,7 +10,9 @@ defmodule Voomex.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test]
     ]
   end
 
@@ -35,6 +37,7 @@ defmodule Voomex.MixProject do
     [
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.0"},
+      {:excoveralls, "~> 0.10", only: :test},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:oban, "~> 1.2"},
